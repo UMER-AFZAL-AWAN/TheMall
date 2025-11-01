@@ -11,3 +11,7 @@ venv\Scripts\Activate.ps1
 # install required packages
 pip install -r requirements.txt
 
+# to study 
+dunder function __functions 
+string manipulation 
+string formating
