@@ -50,3 +50,18 @@ class ReaderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reader
         fields = ['id', 'name', 'books', 'book_ids']
+
+# 🔹 New Serializer to Create Author + Books in One Request
+class AuthorWithBooksSerializer(serializers.ModelSerializer):
+    books = BookSerializer(many=True, write_only=True)
+
+    class Meta:
+        model = Author
+        fields = ['id', 'name', 'books']
+
+    def create(self, validated_data):
+        books_data = validated_data.pop('books', [])
+        author = Author.objects.create(**validated_data)
+        for book_data in books_data:
+            Book.objects.create(author=author, **book_data)
+        return author
