@@ -5,7 +5,10 @@ from .views import (
     DeskViewSet,
     AuthorViewSet,
     BookViewSet,
-    ReaderViewSet
+    ReaderViewSet,
+    StudentViewSet,
+    EnrollmentViewSet,
+    StudentProfileViewSet
 )
 
 router = DefaultRouter()
@@ -14,6 +17,9 @@ router.register(r'desks', DeskViewSet)
 router.register(r'authors', AuthorViewSet)
 router.register(r'books', BookViewSet)
 router.register(r'readers', ReaderViewSet)
+router.register(r'students', StudentViewSet)
+router.register(r'enrollments', EnrollmentViewSet)
+router.register(r'student_profiles', StudentProfileViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

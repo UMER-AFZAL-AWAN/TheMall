@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Librarian, Desk, Author, Book, Reader
+from .models import Librarian, Desk, Author, Book, Reader, Student, Enrollment, StudentProfile
 
 
 # 1️⃣ Librarian Serializer
@@ -65,3 +65,34 @@ class AuthorWithBooksSerializer(serializers.ModelSerializer):
         for book_data in books_data:
             Book.objects.create(author=author, **book_data)
         return author
+    
+
+# 6️⃣ Student Serializer
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = '__all__'
+
+
+# 7️⃣ Enrollment Serializer
+class EnrollmentSerializer(serializers.ModelSerializer):
+    student = StudentSerializer(read_only=True)
+    student_id = serializers.PrimaryKeyRelatedField(
+        queryset=Student.objects.all(), source='student', write_only=True
+    )
+
+    class Meta:
+        model = Enrollment
+        fields = ['id', 'course_name', 'semester', 'student', 'student_id']
+
+
+# 8️⃣ StudentProfile Serializer (connects to Enrollment)
+class StudentProfileSerializer(serializers.ModelSerializer):
+    enrollment = EnrollmentSerializer(read_only=True)
+    enrollment_id = serializers.PrimaryKeyRelatedField(
+        queryset=Enrollment.objects.all(), source='enrollment', write_only=True
+    )
+
+    class Meta:
+        model = StudentProfile
+        fields = ['enrollment_id', 'enrollment', 'gpa', 'attendance_percentage']

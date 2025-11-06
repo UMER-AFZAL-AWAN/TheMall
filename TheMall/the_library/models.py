@@ -43,3 +43,29 @@ class Reader(models.Model):
         return self.name
 
 
+# 4️⃣ Student → Enrollment → StudentProfile (Chained Relationship)
+
+class Student(models.Model):
+    name = models.CharField(max_length=100)
+    roll_no = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.roll_no})"
+
+
+class Enrollment(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='enrollments')
+    course_name = models.CharField(max_length=100)
+    semester = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.student.name} - {self.course_name}"
+
+
+class StudentProfile(models.Model):
+    enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, primary_key=True)
+    gpa = models.DecimalField(max_digits=4, decimal_places=2)
+    attendance_percentage = models.FloatField()
+
+    def __str__(self):
+        return f"Profile of {self.enrollment.student.name}"

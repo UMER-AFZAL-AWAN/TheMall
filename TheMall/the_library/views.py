@@ -1,14 +1,17 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Librarian, Desk, Author, Book, Reader
+from .models import Librarian, Desk, Author, Book, Reader,  Student, Enrollment, StudentProfile
 from .serializers import (
     LibrarianSerializer,
     DeskSerializer,
     AuthorSerializer,
     BookSerializer,
     ReaderSerializer,
-    AuthorWithBooksSerializer
+    AuthorWithBooksSerializer,
+    StudentSerializer, 
+    EnrollmentSerializer, 
+    StudentProfileSerializer
 )
 
 
@@ -118,3 +121,32 @@ class ReaderViewSet(viewsets.ModelViewSet):
             "reader": reader.name,
             "borrowed_books": data
         })
+
+
+# 6️⃣ Student CRUD
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+
+# 7️⃣ Enrollment CRUD
+class EnrollmentViewSet(viewsets.ModelViewSet):
+    queryset = Enrollment.objects.select_related('student').all()
+    serializer_class = EnrollmentSerializer
+
+
+# 8️⃣ StudentProfile CRUD (Main interaction point)
+class StudentProfileViewSet(viewsets.ModelViewSet):
+    queryset = StudentProfile.objects.select_related('enrollment__student').all()
+    serializer_class = StudentProfileSerializer
+
+    # 🆕 Example custom action: fetch full chain (Profile → Enrollment → Student)
+    @action(detail=True, methods=['get'])
+    def full_details(self, request, pk=None):
+        profile = self.get_object()
+        data = {
+            "profile": StudentProfileSerializer(profile).data,
+            "enrollment": EnrollmentSerializer(profile.enrollment).data,
+            "student": StudentSerializer(profile.enrollment.student).data
+        }
+        return Response(data)
