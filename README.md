@@ -15,3 +15,6 @@ pip install -r requirements.txt
 dunder function __functions 
 string manipulation 
 string formating
+Constraits (Course Column + Semester = Composite Key KEY1) (KEY1 + St_id = KEY2)
+
+WRAPPERS - DECORATORS 

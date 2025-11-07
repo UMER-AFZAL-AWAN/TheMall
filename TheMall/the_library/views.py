@@ -140,13 +140,46 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.select_related('enrollment__student').all()
     serializer_class = StudentProfileSerializer
 
-    # 🆕 Example custom action: fetch full chain (Profile → Enrollment → Student)
     @action(detail=True, methods=['get'])
     def full_details(self, request, pk=None):
-        profile = self.get_object()
-        data = {
-            "profile": StudentProfileSerializer(profile).data,
-            "enrollment": EnrollmentSerializer(profile.enrollment).data,
-            "student": StudentSerializer(profile.enrollment.student).data
-        }
-        return Response(data)
+            profile = self.get_object()
+
+            # Create a serializer with depth=1 dynamically for read-only output
+            serializer = StudentProfileSerializer(profile, context={'request': request})
+            serializer.Meta.depth = 1  # dynamically enable depth=1
+            sample_function(5, 10)
+            return Response(serializer.data)
+    
+
+    #QUERY PARAMETER EXAMPLE
+    #How Action Decorator Works
+    @action(detail=True, methods=['get'])
+    def sample_function(self, request, pk=None):
+        x = request.query_params.get('x')
+        y = request.query_params.get('y')
+
+        if x is None or y is None:
+            return Response({"error": "Please provide x and y parameters"}, status=400)
+
+        try:
+            result = int(x) + int(y)
+        except ValueError:
+            return Response({"error": "x and y must be numbers"}, status=400)
+
+        return Response({"sum": result})
+
+        
+
+    # # 🆕 Example custom action: fetch full chain (Profile → Enrollment → Student)
+    # @action(detail=True, methods=['get'])
+    # def full_details(self, request, pk=None):
+    #     profile = self.get_object()
+    #     # data = {
+    #     #     "profile": StudentProfileSerializer(profile).data,
+    #     #     "enrollment": EnrollmentSerializer(profile.enrollment).data,
+    #     #     "student": StudentSerializer(profile.enrollment.student).data
+    #     # }
+    #     return Response(data)
+
+
+
