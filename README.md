@@ -18,3 +18,5 @@ string formating
 Constraits (Course Column + Semester = Composite Key KEY1) (KEY1 + St_id = KEY2)
 
 WRAPPERS - DECORATORS 
+
+Custom searilizer for Foreign Keys :')
